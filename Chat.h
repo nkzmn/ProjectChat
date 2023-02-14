@@ -2,4 +2,4 @@
 #include <iostream>
 
 void menu();
-void chat();
+//void chat();
