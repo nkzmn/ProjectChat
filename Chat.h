@@ -33,6 +33,8 @@ private:
 	void login();
 	void singUp();
 	void showAllUsersName() const;
+	void showChat() const;
+	void addMessage();
 	
 	std::vector<User>& getAllUsers() { return _users; }
 	std::vector<Message>& getAllmessages() { return _messages; }

@@ -142,3 +142,55 @@ void Chat::singUp()
 	_users.push_back(user);
 	_currentUser = std::make_shared<User>(user);
 }
+
+
+void Chat::showChat() const
+{
+	std::string from,to;
+
+	std::cout << "Chat 1.0 "<<std::endl;
+
+	for (auto &mess:_messages)
+	{
+		if(_currentUser->getUserLogin()==mess.getFrom()|| _currentUser->getUserLogin() == mess.getTo()||mess.getTo() == "All")
+		{
+			from = (_currentUser->getUserLogin() == mess.getFrom()) ? "Me" : getUserByLogin(mess.getFrom())->getUserName();
+			if (mess.getTo() == "All")
+			{
+				to = "All";
+			}
+			else
+			{
+				to = (_currentUser->getUserLogin() == mess.getTo()) ? "Me" : getUserByLogin(mess.getTo())->getUserName();
+			}
+
+			std::cout << "Message from " << from << " to " << to << std::endl;
+			std::cout << "Text: "<<mess.getText() << std::endl;
+		}
+	}
+	std::cout << "____END____ " << std::endl;
+}
+
+void Chat::addMessage()
+{
+	std::string to, text;
+
+	std::cout << "To (name or All): ";
+	std::cin >> to;
+	std::cout << "Text: ";
+	std::cin.ignore();
+	std::getline(std::cin, text);
+
+	if (!(to == "All" || getUserByName(to)))
+	{
+		std::cout << "error send message: can't find " << to << std::endl;
+		return;
+	}
+
+	if (to == "All")
+		_messages.push_back(Message{ _currentUser->getUserLogin(), "All", text });
+		
+	else
+		_messages.push_back(Message{ _currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text });
+		
+}
