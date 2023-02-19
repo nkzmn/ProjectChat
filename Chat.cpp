@@ -194,3 +194,23 @@ void Chat::addMessage()
 		_messages.push_back(Message{ _currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text });
 		
 }
+
+std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
+{
+	for (auto& user : _users)
+	{
+		if (login == user.getUserLogin())
+			return std::make_shared<User>(user);
+	}
+	return nullptr;
+}
+
+std::shared_ptr<User> Chat::getUserByName(const std::string& name) const
+{
+	for (auto& user : _users)
+	{
+		if (name == user.getUserName())
+			return std::make_shared<User>(user);
+	}
+	return nullptr;
+}

@@ -38,4 +38,6 @@ private:
 	
 	std::vector<User>& getAllUsers() { return _users; }
 	std::vector<Message>& getAllmessages() { return _messages; }
+	std::shared_ptr<User> getUserByLogin(const std::string& login) const;
+	std::shared_ptr<User> getUserByName(const std::string& name) const;
 };
