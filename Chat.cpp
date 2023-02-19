@@ -57,10 +57,10 @@ void Chat::showUserMenu()
 		switch (operation)
 		{
 		case '1':
-			
+			showChat();
 			break;
 		case '2':
-			
+			addMessage();
 			break;
 		case '3':
 			showAllUsersName();
