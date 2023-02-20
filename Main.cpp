@@ -1,6 +1,6 @@
 #include "Chat.h"
-
-int main(int argc, char* argv[])
+#include <clocale>
+int main()
 {
 	setlocale (LC_ALL, "");
 
@@ -17,6 +17,6 @@ int main(int argc, char* argv[])
 			chat.showUserMenu();
 		}
 	}
-
+	
 	return 0;
 }
