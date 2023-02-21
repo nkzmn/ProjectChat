@@ -3,6 +3,8 @@
 *.swp
 *.ninja
 .ninja*
+*.vcxproj
+*.vcxproj.filters
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
