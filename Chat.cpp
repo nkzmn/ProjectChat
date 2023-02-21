@@ -1,7 +1,11 @@
 #include<iostream>
-
 #include"Chat.h"
 #include "User.h"
+//#include <io.h>
+//#include <fcntl.h>
+#include <locale.h>
+#include <conio.h>
+#include <vector>
 
 void Chat::startChat()
 {
@@ -12,12 +16,13 @@ void Chat::showLoginMenu()
 {
 	_currentUser = nullptr;
 	char operation;
-
+	std::cout << "\t\tChat 1.0 is run.\n\a";
 	do
 	{
-		std::cout << "(1)Login" << std::endl;
-		std::cout << "(2)SingUp" << std::endl;
-		std::cout << "(0)ShutDown" << std::endl;
+		
+		std::cout << "\n(1)Login\t";
+		std::cout << "(2)SingUp\t";
+		std::cout << "(0)ShutDown\n>> ";
 		std::cin >> operation;
 
 		switch (operation)
@@ -48,11 +53,11 @@ void Chat::showLoginMenu()
 void Chat::showUserMenu()
 {
 	char operation;
-	std::cout << "Hi, " << _currentUser->getUserName()<<std::endl;
+	std::cout << "Hi, " << _currentUser->getUserName()<<".\n";
 
 	while (_currentUser)
 	{
-		std::cout << "Menu:(1)Show chat | (2)Add message | (3)Users | (0)Logout" << std::endl<<">> ";
+		std::cout << "Menu:(1)Show chat | (2)Add message | (3)Users | (4)Delete last message | (0)Logout" << "\n>> ";
 		std::cin >> operation;
 		switch (operation)
 		{
@@ -64,6 +69,9 @@ void Chat::showUserMenu()
 			break;
 		case '3':
 			showAllUsersName();
+			break;
+		case '4':
+			deleteLastMessage();
 			break;
 		case '0':
 			_currentUser = nullptr;
@@ -80,7 +88,18 @@ void Chat::showAllUsersName() const
 	std::cout << "--- Users ---" << std::endl;
 	for (auto& user : _users)
 	{
-		std::cout << user.getUserName();
+		std::locale::global(std::locale("en_US.UTF-8"));
+		uint32_t Spades = 0x2642;
+		uint32_t Spades1 = 0x2640;
+		if (user.getUserGender()=="Male")
+		{
+			std::wcout << (wchar_t)Spades<<" ";
+		}
+		else
+		{
+			std::wcout << (wchar_t)Spades1 << " ";
+		}
+		std::cout <<user.getUserName();
 
 		if (_currentUser->getUserLogin() == user.getUserLogin())
 			std::cout << "(me)";
@@ -90,20 +109,64 @@ void Chat::showAllUsersName() const
 	std::cout << "----------" << std::endl;
 }
 
+void Chat::singUp()
+{
+	//char c;
+	std::string login, name, gender;
+	std::string password;
+	//std::vector<char> password;
+	std::cout << "Login: ";
+	std::cin >> login;
+	std::cout << "Password: ";
+	std::cin >> password;
+	/*while ((c = _getch()) != '\r')
+	{
+		password.push_back(c);
+		_putch('*');
+	}*/
+	std::cout << "Name: ";
+	std::cin >> name;
+	std::cout << "Gender:(Male,Female) ";
+	do
+	{
+		std::cin >> gender;
+	} while (!(gender == "Male" || gender == "Female"));
+
+
+	if (getUserByLogin(login) || login == "All")
+	{
+		throw UserLoginExp();
+	}
+	if (getUserByName(name) || name == "All")
+	{
+		throw UserNameExp();
+	}
+
+	User user = User(login, password, name, gender);
+	_users.push_back(user);
+	_currentUser = std::make_shared<User>(user);
+
+}
 
 void Chat::login()
 {
+	
 	std::string login, password;
+	//std::vector <char> password;
 	char operation;
+	//char ñ;
 	do
 	{
 		std::cout << "Login: ";
 		std::cin >> login;
+		_currentUser = getUserByLogin(login);
 		std::cout << "Password: ";
 		std::cin >> password;
-
-		_currentUser = getUserByLogin(login);
-
+		/*while ((ñ = _getch()) != '\r')
+		{
+			password.push_back(ñ);
+			_putch('*');
+		}*/
 		if (_currentUser == nullptr || (password != _currentUser->getUserPassword()))
 		{
 			_currentUser=nullptr;
@@ -118,30 +181,6 @@ void Chat::login()
 	} while (!_currentUser);
 }
 
-void Chat::singUp()
-{
-	std::string login, password,name;
-
-	std::cout << "Login: ";
-	std::cin >> login;
-	std::cout << "Password: ";
-	std::cin >> password;
-	std::cout << "Name: ";
-	std::cin >> name;
-
-	if (getUserByLogin(login) || login == "All")
-	{
-		throw UserLoginExp();
-	}
-	if (getUserByName(name) || name == "All")
-	{
-		throw UserNameExp();
-	}
-
-	User user = User(login, password, name);
-	_users.push_back(user);
-	_currentUser = std::make_shared<User>(user);
-}
 
 
 void Chat::showChat() const
@@ -181,18 +220,36 @@ void Chat::addMessage()
 	std::cin.ignore();
 	std::getline(std::cin, text);
 
-	if (!(to == "All" || getUserByName(to)))
+	if (!(to == "all" || to == "All" || getUserByName(to)))
 	{
 		std::cout << "error send message: can't find " << to << std::endl;
 		return;
 	}
 
-	if (to == "All")
+	if (to == "All" || to == "all")
 		_messages.push_back(Message{ _currentUser->getUserLogin(), "All", text });
 		
 	else
 		_messages.push_back(Message{ _currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text });
-		
+}
+
+void Chat::deleteLastMessage()
+{
+	if (!(_messages.empty()))
+	{
+		Message s = _messages.back();
+
+		if ((_currentUser->getUserName() == "Admin") || (s.getFrom() == _currentUser->getUserLogin()))
+		{
+			_messages.pop_back();
+			std::cout << endl << "Message was deleted" << endl;
+		}
+		else
+		{
+			std::cout << "Not enough rights to delete" << endl;
+		}
+	}
+	std::cout << "Chat is empty!" << endl;
 }
 
 std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
@@ -214,3 +271,4 @@ std::shared_ptr<User> Chat::getUserByName(const std::string& name) const
 	}
 	return nullptr;
 }
+
