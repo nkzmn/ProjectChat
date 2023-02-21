@@ -3,7 +3,7 @@
 *.swp
 *.ninja
 .ninja*
-Chat.sln
+*.sln
 *.vcxproj
 *.vcxproj.filters
 CMakeCache.txt
