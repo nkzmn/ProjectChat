@@ -1,8 +1,6 @@
-#include<iostream>
-#include"Chat.h"
+#include <iostream>
+#include "Chat.h"
 #include "User.h"
-//#include <io.h>
-//#include <fcntl.h>
 #include <locale.h>
 #include <conio.h>
 #include <vector>
@@ -111,24 +109,25 @@ void Chat::showAllUsersName() const
 
 void Chat::singUp()
 {
-	//char c;
+	char c;
 	std::string login, name, gender;
-	std::string password;
-	//std::vector<char> password;
+	//std::string password;
+	std::vector<char> password;
 	std::cout << "Login: ";
 	std::cin >> login;
 	std::cout << "Password: ";
-	std::cin >> password;
-	/*while ((c = _getch()) != '\r')
+	//std::cin >> password;
+	while ((c = _getch()) != '\r')
 	{
 		password.push_back(c);
 		_putch('*');
-	}*/
-	std::cout << "Name: ";
+	}
+	std::cout << "\nName: ";
 	std::cin >> name;
-	std::cout << "Gender:(Male,Female) ";
+	std::cout << "Gender:";
 	do
 	{
+		std::cout << "\n(Male,Female) ";
 		std::cin >> gender;
 	} while (!(gender == "Male" || gender == "Female"));
 
@@ -151,22 +150,24 @@ void Chat::singUp()
 void Chat::login()
 {
 	
-	std::string login, password;
-	//std::vector <char> password;
+	std::string login;
+	//std::string password;
+	std::vector <char> password;
 	char operation;
-	//char ñ;
+	char ñ;
 	do
 	{
 		std::cout << "Login: ";
 		std::cin >> login;
 		_currentUser = getUserByLogin(login);
 		std::cout << "Password: ";
-		std::cin >> password;
-		/*while ((ñ = _getch()) != '\r')
+		//std::cin >> password;
+		while ((ñ = _getch()) != '\r')
 		{
 			password.push_back(ñ);
 			_putch('*');
-		}*/
+		}
+		std::cout << "\n";
 		if (_currentUser == nullptr || (password != _currentUser->getUserPassword()))
 		{
 			_currentUser=nullptr;
@@ -242,11 +243,11 @@ void Chat::deleteLastMessage()
 		if ((_currentUser->getUserName() == "Admin") || (s.getFrom() == _currentUser->getUserLogin()))
 		{
 			_messages.pop_back();
-			std::cout << endl << "Message was deleted" << endl;
+			std::cout << endl << "Message was deleted." << endl;
 		}
 		else
 		{
-			std::cout << "Not enough rights to delete" << endl;
+			std::cout << "Not enough rights to delete." << endl;
 		}
 	}
 	std::cout << "Chat is empty!" << endl;
