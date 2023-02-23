@@ -1,9 +1,4 @@
-#include <iostream>
 #include "Chat.h"
-#include "User.h"
-#include <locale.h>
-#include <conio.h>
-#include <vector>
 
 void Chat::startChat()
 {
@@ -18,17 +13,14 @@ void Chat::showLoginMenu()
 	do
 	{
 		
-		std::cout << "\n(1)Login\t";
-		std::cout << "(2)SingUp\t";
+		std::cout << "\n(1)SignUp\t";
+		std::cout << "(2)Login\t";
 		std::cout << "(0)ShutDown\n>> ";
 		std::cin >> operation;
 
 		switch (operation)
 		{
 		case '1':
-			login();
-			break;
-		case '2':
 			try
 			{
 				singUp();
@@ -37,6 +29,9 @@ void Chat::showLoginMenu()
 			{
 				std::cout << e.what() << std::endl;
 			}
+			break;
+		case '2':
+			login();
 			break;
 		case'0':
 			_isChatWork = false;
@@ -111,12 +106,10 @@ void Chat::singUp()
 {
 	char c;
 	std::string login, name, gender;
-	//std::string password;
 	std::vector<char> password;
 	std::cout << "Login: ";
 	std::cin >> login;
 	std::cout << "Password: ";
-	//std::cin >> password;
 	while ((c = _getch()) != '\r')
 	{
 		password.push_back(c);
@@ -125,10 +118,13 @@ void Chat::singUp()
 	std::cout << "\nName: ";
 	std::cin >> name;
 	std::cout << "Gender:";
+	
 	do
 	{
 		std::cout << "\n(Male,Female) ";
 		std::cin >> gender;
+		if (!(gender == "Male" || gender == "Female"))
+			std::cout << "Enter Male or Female";
 	} while (!(gender == "Male" || gender == "Female"));
 
 
@@ -151,7 +147,6 @@ void Chat::login()
 {
 	
 	std::string login;
-	//std::string password;
 	std::vector <char> password;
 	char operation;
 	char ñ;
@@ -161,7 +156,6 @@ void Chat::login()
 		std::cin >> login;
 		_currentUser = getUserByLogin(login);
 		std::cout << "Password: ";
-		//std::cin >> password;
 		while ((ñ = _getch()) != '\r')
 		{
 			password.push_back(ñ);
@@ -181,8 +175,6 @@ void Chat::login()
 		}
 	} while (!_currentUser);
 }
-
-
 
 void Chat::showChat() const
 {
@@ -243,14 +235,14 @@ void Chat::deleteLastMessage()
 		if ((_currentUser->getUserName() == "Admin") || (s.getFrom() == _currentUser->getUserLogin()))
 		{
 			_messages.pop_back();
-			std::cout << endl << "Message was deleted." << endl;
+			std::cout << std::endl << "Message was deleted." << std::endl;
 		}
 		else
 		{
-			std::cout << "Not enough rights to delete." << endl;
+			std::cout << "Not enough rights to delete." << std::endl;
 		}
 	}
-	std::cout << "Chat is empty!" << endl;
+	std::cout << "Chat is empty!" << std::endl;
 }
 
 std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const

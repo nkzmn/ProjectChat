@@ -1,9 +1,11 @@
 #pragma once
-#include<vector>
-#include<exception>
-#include<memory>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <conio.h>
+
 #include"Message.h"
-using namespace std;
+
 struct UserLoginExp: public std::exception
 {
 	const char* what() const noexcept override { return "error: Login is busy"; }

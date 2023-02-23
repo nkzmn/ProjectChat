@@ -1,12 +1,9 @@
 #pragma once
-#include <string>
-
 
 class User
 {
 	const std::string _login;
 	std::vector<char> _password;
-	//std::string _password;
 	std::string _name;
 	std::string _gender;
 public:

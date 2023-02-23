@@ -1,5 +1,5 @@
 #include "Chat.h"
-#include <clocale>
+
 int main()
 {
 	setlocale (LC_ALL, "");
