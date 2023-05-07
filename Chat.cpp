@@ -78,38 +78,34 @@ void Chat::showUserMenu()
 
 void Chat::showAllUsersName() const
 {
+	std::locale::global(std::locale("en_US.UTF-8"));
+	uint32_t Spades = 0x2642;
+	uint32_t Spades1 = 0x2640;
+
 	std::cout << "--- Users ---" << std::endl;
-	for (auto& user : _users)
+
+	for (const auto& user : _users)
 	{
-		std::locale::global(std::locale("en_US.UTF-8"));
-		uint32_t Spades = 0x2642;
-		uint32_t Spades1 = 0x2640;
-		if (user.getUserGender()=="Male")
-		{
-			std::wcout << (wchar_t)Spades<<" ";
-		}
-		else
-		{
-			std::wcout << (wchar_t)Spades1 << " ";
-		}
-		std::cout <<user.getUserName();
+		std::wcout << (user.getUserGender() == "Male" ? (wchar_t)Spades : (wchar_t)Spades1) << " ";
+		std::cout << user.getUserName();
 
 		if (_currentUser->getUserLogin() == user.getUserLogin())
 			std::cout << "(me)";
 
 		std::cout << std::endl;
 	}
+
 	std::cout << "----------" << std::endl;
 }
 
 void Chat::singUp()
 {
-	char c;
 	std::string login, name, gender;
 	std::vector<char> password;
 	std::cout << "Login: ";
 	std::cin >> login;
 	std::cout << "Password: ";
+	char c;
 	while ((c = _getch()) != '\r')
 	{
 		password.push_back(c);
@@ -118,7 +114,7 @@ void Chat::singUp()
 	std::cout << "\nName: ";
 	std::cin >> name;
 	std::cout << "Gender:";
-	
+
 	do
 	{
 		std::cout << "\n(Male,Female) ";
@@ -127,25 +123,19 @@ void Chat::singUp()
 			std::cout << "Enter Male or Female";
 	} while (!(gender == "Male" || gender == "Female"));
 
-
 	if (getUserByLogin(login) || login == "All")
-	{
 		throw UserLoginExp();
-	}
 	if (getUserByName(name) || name == "All")
-	{
 		throw UserNameExp();
-	}
 
-	User user = User(login, password, name, gender);
+	User user(login, password, name, gender);
 	_users.push_back(user);
 	_currentUser = std::make_shared<User>(user);
-
 }
+
 
 void Chat::login()
 {
-	
 	std::string login;
 	std::vector <char> password;
 	char operation;
@@ -220,10 +210,10 @@ void Chat::addMessage()
 	}
 
 	if (to == "All" || to == "all")
-		_messages.push_back(Message{ _currentUser->getUserLogin(), "All", text });
+		_messages.emplace_back(_currentUser->getUserLogin(), "All", text);
 		
 	else
-		_messages.push_back(Message{ _currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text });
+		_messages.emplace_back(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text);
 }
 
 void Chat::deleteLastMessage()

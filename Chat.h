@@ -2,9 +2,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 #include <conio.h>
 
-#include"Message.h"
+#include "User.h"
+#include "Message.h"
 
 struct UserLoginExp: public std::exception
 {

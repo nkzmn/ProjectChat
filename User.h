@@ -15,5 +15,5 @@ public:
 	const std::string& getUserName() const { return _name; }
 	void setUserName(const std::string& name) { _name = name; }
 	const std::string& getUserGender() const { return _gender; }
-	void setUserGender(int gender) { _gender=gender; }
+	void setUserGender(std::string gender) { _gender=gender; }
 };
