@@ -139,16 +139,16 @@ void Chat::login()
 	std::string login;
 	std::vector <char> password;
 	char operation;
-	char Ò;
+	char —Å;
 	do
 	{
 		std::cout << "Login: ";
 		std::cin >> login;
 		_currentUser = getUserByLogin(login);
 		std::cout << "Password: ";
-		while ((Ò = _getch()) != '\r')
+		while ((—Å = _getch()) != '\r')
 		{
-			password.push_back(Ò);
+			password.push_back(√±);
 			_putch('*');
 		}
 		std::cout << "\n";
