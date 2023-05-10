@@ -148,7 +148,7 @@ void Chat::login()
 		std::cout << "Password: ";
 		while ((с = _getch()) != '\r')
 		{
-			password.push_back(ñ);
+			password.push_back(c);
 			_putch('*');
 		}
 		std::cout << "\n";
