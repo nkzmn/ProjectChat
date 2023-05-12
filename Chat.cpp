@@ -100,18 +100,13 @@ void Chat::showAllUsersName() const
 
 void Chat::singUp()
 {
-	std::string login, name, gender;
-	std::vector<char> password;
+	std::string login, name, gender, password;
+
 	std::cout << "Login: ";
 	std::cin >> login;
 	std::cout << "Password: ";
-	char c;
-	while ((c = _getch()) != '\r')
-	{
-		password.push_back(c);
-		_putch('*');
-	}
-	std::cout << "\nName: ";
+	std::cin >> password;
+	std::cout << "Name: ";
 	std::cin >> name;
 	std::cout << "Gender:";
 
@@ -136,22 +131,16 @@ void Chat::singUp()
 
 void Chat::login()
 {
-	std::string login;
-	std::vector <char> password;
+	std::string login, password;
 	char operation;
-	char с;
 	do
 	{
 		std::cout << "Login: ";
 		std::cin >> login;
 		_currentUser = getUserByLogin(login);
 		std::cout << "Password: ";
-		while ((с = _getch()) != '\r')
-		{
-			password.push_back(c);
-			_putch('*');
-		}
-		std::cout << "\n";
+		std::cin >> password;
+
 		if (_currentUser == nullptr || (password != _currentUser->getUserPassword()))
 		{
 			_currentUser=nullptr;
