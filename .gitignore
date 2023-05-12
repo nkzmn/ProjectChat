@@ -1,6 +1,10 @@
+# Chat
+Chat
+users.txt
+messages.txt
+
 # CMake
 
-Chat
 *.swp
 *.ninja
 .ninja*

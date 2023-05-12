@@ -9,7 +9,7 @@ void Chat::showLoginMenu()
 {
 	_currentUser = nullptr;
 	char operation;
-	std::cout << "\t\tChat 1.0 is run.\n\a";
+	std::cout << "\t\tChat 2.0 is run.\n\a";
 	do
 	{
 		
@@ -84,8 +84,13 @@ void Chat::showAllUsersName() const
 
 	std::cout << "--- Users ---" << std::endl;
 
-	for (const auto& user : _users)
+	std::ifstream user_file("users.txt");
+	std::string name;
+	std::string gender;
+
+	while (user_file >> name >> gender)
 	{
+		User user(name, gender);
 		std::wcout << (user.getUserGender() == "Male" ? (wchar_t)Spades : (wchar_t)Spades1) << " ";
 		std::cout << user.getUserName();
 
@@ -101,7 +106,6 @@ void Chat::showAllUsersName() const
 void Chat::singUp()
 {
 	std::string login, name, gender, password;
-
 	std::cout << "Login: ";
 	std::cin >> login;
 	std::cout << "Password: ";
@@ -126,32 +130,59 @@ void Chat::singUp()
 	User user(login, password, name, gender);
 	_users.push_back(user);
 	_currentUser = std::make_shared<User>(user);
+
+	if (!user_file)
+		user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::trunc);
+
+	if (user_file)
+	{
+		User obj(login, password, name, gender);
+		user_file << obj << std::endl;
+	}
+	else
+		std::cout << "Could not open file users.txt!" << std::endl;
 }
 
 
 void Chat::login()
 {
-	std::string login, password;
+	std::string login;
+	std::string password;
 	char operation;
+
 	do
 	{
 		std::cout << "Login: ";
 		std::cin >> login;
+
 		_currentUser = getUserByLogin(login);
+		if (_currentUser == nullptr)
+		{
+			std::cout << "Login invalid." << std::endl;
+			std::cout << "(0)exit or any key to return menu: ";
+			std::cin >> operation;
+
+			if (operation == '0')
+				break;
+
+			continue;
+		}
+
 		std::cout << "Password: ";
 		std::cin >> password;
 
-		if (_currentUser == nullptr || (password != _currentUser->getUserPassword()))
+		if (password != _currentUser->getUserPassword())
 		{
-			_currentUser=nullptr;
+			_currentUser = nullptr;
 
-				std::cout << "Login invalid."<<std::endl;
-				std::cout << "(0)exit or any key to return menu: ";
-				std::cin >> operation;
+			std::cout << "Login invalid." << std::endl;
+			std::cout << "(0)exit or any key to return menu: ";
+			std::cin >> operation;
 
-				if(operation=='0')
-					break;
+			if (operation == '0')
+				break;
 		}
+
 	} while (!_currentUser);
 }
 
@@ -226,11 +257,26 @@ void Chat::deleteLastMessage()
 
 std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
 {
-	for (auto& user : _users)
+	std::ifstream user_file("users.txt");
+	if (!user_file.is_open())
 	{
-		if (login == user.getUserLogin())
-			return std::make_shared<User>(user);
+		std::cout << "Error opening users file." << std::endl;
+		return nullptr;
 	}
+
+	std::string userLogin;
+	std::string userPassword;
+	std::string userName;
+	std::string userGender;
+
+	while (user_file >> userLogin >> userPassword >> userName >> userGender)
+	{
+		if (userLogin == login)
+		{
+			return std::make_shared<User>(userLogin, userPassword, userName, userGender);
+		}
+	}
+
 	return nullptr;
 }
 
@@ -244,3 +290,22 @@ std::shared_ptr<User> Chat::getUserByName(const std::string& name) const
 	return nullptr;
 }
 
+std::fstream& operator >>(std::fstream& is, User& obj)
+{
+	is >> obj._name;
+	is >> obj._login;
+	is >> obj._password;
+	is >> obj._gender;
+	return is;
+}
+std::ostream& operator <<(std::ostream& os, const User& obj)
+{
+	os << obj._login;
+	os << ' ';
+	os << obj._password;
+	os << ' ';
+	os << obj._name;
+	os << ' ';
+	os << obj._gender;
+	return os;
+}
