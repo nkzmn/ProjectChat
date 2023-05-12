@@ -1,5 +1,6 @@
 # CMake
 
+Chat
 *.swp
 *.ninja
 .ninja*
