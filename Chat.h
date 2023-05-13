@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <memory>
 
 #include "User.h"
 #include "Message.h"

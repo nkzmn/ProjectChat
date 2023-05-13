@@ -85,16 +85,24 @@ void Chat::showAllUsersName() const
 	std::cout << "--- Users ---" << std::endl;
 
 	std::ifstream user_file("users.txt");
+
+	std::string login;
+	std::string password;
 	std::string name;
 	std::string gender;
 
-	while (user_file >> name >> gender)
+	while (user_file >> login >> password >> name >> gender)
 	{
-		User user(name, gender);
-		std::wcout << (user.getUserGender() == "Male" ? (wchar_t)Spades : (wchar_t)Spades1) << " ";
+		User user(login, password, name, gender);
+
+		if (user.getUserGender() == "Male")
+			std::wcout << (wchar_t)Spades << " ";
+		else if (user.getUserGender() == "Female")
+			std::wcout << (wchar_t)Spades1 << " ";
+
 		std::cout << user.getUserName();
 
-		if (_currentUser->getUserLogin() == user.getUserLogin())
+		if (login == _currentUser->getUserLogin())
 			std::cout << "(me)";
 
 		std::cout << std::endl;
