@@ -188,28 +188,38 @@ void Chat::login()
 
 void Chat::showChat() const
 {
-	std::string from,to;
+	std::string from, to, text;
 
-	std::cout << "Chat 1.0 "<<std::endl;
+	std::cout << "____START____ "<<std::endl;
 
-	for (auto &mess:_messages)
+	std::ifstream messagesFile("messages.txt");
+	if (!messagesFile.is_open())
 	{
-		if(_currentUser->getUserLogin()==mess.getFrom()|| _currentUser->getUserLogin() == mess.getTo()||mess.getTo() == "All")
+		std::cout << "Error opening file!" << std::endl;
+		return;
+	}
+
+	while (getline(messagesFile, from, ' ') && getline(messagesFile, to, ' ') && getline(messagesFile, text))
+	{
+		if (_currentUser->getUserLogin() == from || _currentUser->getUserLogin() == to || to == "All")
 		{
-			from = (_currentUser->getUserLogin() == mess.getFrom()) ? "Me" : getUserByLogin(mess.getFrom())->getUserName();
-			if (mess.getTo() == "All")
+			from = (_currentUser->getUserLogin() == from) ? "Me" : getUserByLogin(from)->getUserName();
+			if (to == "All")
 			{
 				to = "All";
 			}
 			else
 			{
-				to = (_currentUser->getUserLogin() == mess.getTo()) ? "Me" : getUserByLogin(mess.getTo())->getUserName();
+				to = (_currentUser->getUserLogin() == to) ? "Me" : getUserByLogin(to)->getUserName();
 			}
 
 			std::cout << "Message from " << from << " to " << to << std::endl;
-			std::cout << "Text: "<<mess.getText() << std::endl;
+			std::cout << "Text: " << text << std::endl;
 		}
 	}
+
+	messagesFile.close();
+
 	std::cout << "____END____ " << std::endl;
 }
 
@@ -223,17 +233,42 @@ void Chat::addMessage()
 	std::cin.ignore();
 	std::getline(std::cin, text);
 
-	if (!(to == "all" || to == "All" || getUserByName(to)))
-	{
-		std::cout << "error send message: can't find " << to << std::endl;
-		return;
-	}
-
 	if (to == "All" || to == "all")
-		_messages.emplace_back(_currentUser->getUserLogin(), "All", text);
-		
+	{
+		Message message(_currentUser->getUserLogin(), "All", text);
+		_messages.push_back(message);
+
+		msg_file << message << std::endl;
+		msg_file.close();
+	}
 	else
-		_messages.emplace_back(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text);
+	{
+		std::ifstream users_file("users.txt");
+		std::string login, password, name, gender;
+
+		bool found = false;
+		while (users_file >> login >> password >> name >> gender) 
+		{
+			if (name == to) 
+			{
+				found = true;
+				Message message(_currentUser->getUserLogin(), login, text);
+				_messages.push_back(message);
+
+				msg_file << message << std::endl;
+				msg_file.close();
+
+				break;
+			}
+		}
+		users_file.close();
+
+		if (!found)
+		{
+			std::cout << "Error: user not found\n";
+			return;
+		}
+	}
 }
 
 void Chat::deleteLastMessage()
@@ -276,7 +311,6 @@ std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
 			return std::make_shared<User>(userLogin, userPassword, userName, userGender);
 		}
 	}
-
 	return nullptr;
 }
 
@@ -307,5 +341,15 @@ std::ostream& operator <<(std::ostream& os, const User& obj)
 	os << obj._name;
 	os << ' ';
 	os << obj._gender;
+	return os;
+}
+
+std::ostream& operator <<(std::ostream& os, const Message& msg)
+{
+	os << msg._from;;
+	os << ' ';
+	os << msg._to;
+	os << ' ';
+	os << msg._text;
 	return os;
 }

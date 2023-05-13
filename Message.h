@@ -10,6 +10,7 @@ public:
 	const std::string& getTo() const{ return _to; }
 	const std::string& getText() const { return _text; }
 	
+	friend std::ostream& operator <<(std::ostream& os, const Message& msg);
 
 private:
 	const std::string _from;

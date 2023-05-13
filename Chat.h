@@ -33,6 +33,7 @@ private:
 	std::vector<Message> _messages;
 	std::shared_ptr<User> _currentUser = nullptr;
 	std::fstream user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::app);
+	std::fstream msg_file = std::fstream("messages.txt", std::ios::in | std::ios::out | std::ios::app);
 
 	void login();
 	void singUp();
