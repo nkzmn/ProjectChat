@@ -1,4 +1,8 @@
 #pragma once
+<<<<<<< HEAD
+=======
+#include <string>
+>>>>>>> master
 
 class Message
 {
@@ -9,6 +13,10 @@ public:
 	const std::string& getTo() const{ return _to; }
 	const std::string& getText() const { return _text; }
 	
+<<<<<<< HEAD
+=======
+	friend std::ostream& operator <<(std::ostream& os, const Message& msg);
+>>>>>>> master
 
 private:
 	const std::string _from;

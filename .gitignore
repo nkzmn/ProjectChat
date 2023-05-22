@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+# Chat
+Chat
+users.txt
+messages.txt
+
+>>>>>>> master
 # CMake
 
 *.swp
@@ -415,4 +423,8 @@ FodyWeavers.xsd
 *.msp
 
 # JetBrains Rider
+<<<<<<< HEAD
 *.sln.iml
+=======
+*.sln.iml
+>>>>>>> master
