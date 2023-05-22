@@ -2,20 +2,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-<<<<<<< HEAD
-<<<<<<< HEAD
-#include <memory>
-#include <conio.h>
-=======
 #include <fstream>
 #include <sstream>
 #include <memory>
->>>>>>> master
-=======
-#include <fstream>
-#include <sstream>
-#include <memory>
->>>>>>> master
 
 #include "User.h"
 #include "Message.h"
@@ -44,16 +33,8 @@ private:
 	std::vector<User> _users;
 	std::vector<Message> _messages;
 	std::shared_ptr<User> _currentUser = nullptr;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 	std::fstream user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::app);
 	std::fstream msg_file = std::fstream("messages.txt", std::ios::in | std::ios::out | std::ios::app);
->>>>>>> master
-=======
-	std::fstream user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::app);
-	std::fstream msg_file = std::fstream("messages.txt", std::ios::in | std::ios::out | std::ios::app);
->>>>>>> master
 
 	void login();
 	void singUp();
@@ -61,14 +42,7 @@ private:
 	void showAllUsersName() const;
 	void addMessage();
 	void deleteLastMessage();
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> master
-=======
-
->>>>>>> master
 	std::vector<User>& getAllUsers() { return _users; }
 	std::vector<Message>& getAllmessages() { return _messages; }
 	std::shared_ptr<User> getUserByLogin(const std::string& login) const;
