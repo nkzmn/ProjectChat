@@ -1,9 +1,9 @@
-SRC = Chat.cpp Main.cpp
-HEADER = User.h Message.h Chat.h
-TARGET = Chat
+SRC = ../source/Chat.cpp Main.cpp
+HEADER = ../include/User.h ../include/Message.h ../include/Chat.h
+TARGET = Client
 PREFIX = /usr/local/bin
 
-chat: $(SRC)
+client: $(SRC)
 	g++ -o $(TARGET) $(HEADER) $(SRC)
 
 install: 

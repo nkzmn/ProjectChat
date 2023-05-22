@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
-# Chat
-Chat
+#Chat
 users.txt
 messages.txt
 
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> master
 # CMake
-
 *.swp
 *.ninja
 .ninja*
@@ -26,7 +15,6 @@ cmake_install.cmake
 libskia.*
 example
 example.png
-include
 skia_compile_arguments.txt
 skia_link_arguments.txt
 
