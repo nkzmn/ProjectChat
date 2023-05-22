@@ -1,5 +1,9 @@
 #pragma once
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+#include <string>
+>>>>>>> master
 =======
 #include <string>
 >>>>>>> master
@@ -14,6 +18,10 @@ public:
 	const std::string& getText() const { return _text; }
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	friend std::ostream& operator <<(std::ostream& os, const Message& msg);
+>>>>>>> master
 =======
 	friend std::ostream& operator <<(std::ostream& os, const Message& msg);
 >>>>>>> master

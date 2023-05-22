@@ -3,8 +3,14 @@
 #include <string>
 #include <vector>
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include <memory>
 #include <conio.h>
+=======
+#include <fstream>
+#include <sstream>
+#include <memory>
+>>>>>>> master
 =======
 #include <fstream>
 #include <sstream>
@@ -39,6 +45,11 @@ private:
 	std::vector<Message> _messages;
 	std::shared_ptr<User> _currentUser = nullptr;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	std::fstream user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::app);
+	std::fstream msg_file = std::fstream("messages.txt", std::ios::in | std::ios::out | std::ios::app);
+>>>>>>> master
 =======
 	std::fstream user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::app);
 	std::fstream msg_file = std::fstream("messages.txt", std::ios::in | std::ios::out | std::ios::app);
@@ -51,6 +62,10 @@ private:
 	void addMessage();
 	void deleteLastMessage();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 =======
 
 >>>>>>> master

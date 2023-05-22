@@ -1,10 +1,16 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 # Chat
 Chat
 users.txt
 messages.txt
 
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 # CMake
 
@@ -424,7 +430,11 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.sln.iml
+=======
+*.sln.iml
+>>>>>>> master
 =======
 *.sln.iml
 >>>>>>> master

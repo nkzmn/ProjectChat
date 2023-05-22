@@ -1,5 +1,6 @@
 #pragma once
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 class User
 {
@@ -18,6 +19,8 @@ public:
 	const std::string& getUserGender() const { return _gender; }
 	void setUserGender(std::string gender) { _gender=gender; }
 =======
+=======
+>>>>>>> master
 #include <string>
 
 class User
@@ -41,5 +44,8 @@ public:
 
 	friend std::fstream& operator >>(std::fstream& is, User& obj);
 	friend std::ostream& operator <<(std::ostream& os, const User& obj);
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 };

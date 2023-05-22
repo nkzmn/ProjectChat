@@ -10,7 +10,11 @@ void Chat::showLoginMenu()
 	_currentUser = nullptr;
 	char operation;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	std::cout << "\t\tChat 1.0 is run.\n\a";
+=======
+	std::cout << "\t\tChat 2.0 is run.\n\a";
+>>>>>>> master
 =======
 	std::cout << "\t\tChat 2.0 is run.\n\a";
 >>>>>>> master
@@ -89,6 +93,7 @@ void Chat::showAllUsersName() const
 	std::cout << "--- Users ---" << std::endl;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	for (const auto& user : _users)
 	{
 		std::wcout << (user.getUserGender() == "Male" ? (wchar_t)Spades : (wchar_t)Spades1) << " ";
@@ -96,6 +101,8 @@ void Chat::showAllUsersName() const
 
 		if (_currentUser->getUserLogin() == user.getUserLogin())
 =======
+=======
+>>>>>>> master
 	std::ifstream user_file("users.txt");
 
 	std::string login;
@@ -115,6 +122,9 @@ void Chat::showAllUsersName() const
 		std::cout << user.getUserName();
 
 		if (login == _currentUser->getUserLogin())
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 			std::cout << "(me)";
 
@@ -126,6 +136,7 @@ void Chat::showAllUsersName() const
 
 void Chat::singUp()
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	std::string login, name, gender;
 	std::vector<char> password;
@@ -140,12 +151,17 @@ void Chat::singUp()
 	}
 	std::cout << "\nName: ";
 =======
+=======
+>>>>>>> master
 	std::string login, name, gender, password;
 	std::cout << "Login: ";
 	std::cin >> login;
 	std::cout << "Password: ";
 	std::cin >> password;
 	std::cout << "Name: ";
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 	std::cin >> name;
 	std::cout << "Gender:";
@@ -167,7 +183,10 @@ void Chat::singUp()
 	_users.push_back(user);
 	_currentUser = std::make_shared<User>(user);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 
 	if (!user_file)
 		user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::trunc);
@@ -179,6 +198,9 @@ void Chat::singUp()
 	}
 	else
 		std::cout << "Could not open file users.txt!" << std::endl;
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 }
 
@@ -186,6 +208,7 @@ void Chat::singUp()
 void Chat::login()
 {
 	std::string login;
+<<<<<<< HEAD
 <<<<<<< HEAD
 	std::vector <char> password;
 	char operation;
@@ -195,10 +218,16 @@ void Chat::login()
 	char operation;
 
 >>>>>>> master
+=======
+	std::string password;
+	char operation;
+
+>>>>>>> master
 	do
 	{
 		std::cout << "Login: ";
 		std::cin >> login;
+<<<<<<< HEAD
 <<<<<<< HEAD
 		_currentUser = getUserByLogin(login);
 		std::cout << "Password: ";
@@ -220,6 +249,8 @@ void Chat::login()
 					break;
 		}
 =======
+=======
+>>>>>>> master
 
 		_currentUser = getUserByLogin(login);
 		if (_currentUser == nullptr)
@@ -249,12 +280,16 @@ void Chat::login()
 				break;
 		}
 
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 	} while (!_currentUser);
 }
 
 void Chat::showChat() const
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	std::string from,to;
 
@@ -267,6 +302,8 @@ void Chat::showChat() const
 			from = (_currentUser->getUserLogin() == mess.getFrom()) ? "Me" : getUserByLogin(mess.getFrom())->getUserName();
 			if (mess.getTo() == "All")
 =======
+=======
+>>>>>>> master
 	std::string from, to, text;
 
 	std::cout << "____START____ "<<std::endl;
@@ -284,12 +321,16 @@ void Chat::showChat() const
 		{
 			from = (_currentUser->getUserLogin() == from) ? "Me" : getUserByLogin(from)->getUserName();
 			if (to == "All")
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 			{
 				to = "All";
 			}
 			else
 			{
+<<<<<<< HEAD
 <<<<<<< HEAD
 				to = (_currentUser->getUserLogin() == mess.getTo()) ? "Me" : getUserByLogin(mess.getTo())->getUserName();
 			}
@@ -299,6 +340,8 @@ void Chat::showChat() const
 		}
 	}
 =======
+=======
+>>>>>>> master
 				to = (_currentUser->getUserLogin() == to) ? "Me" : getUserByLogin(to)->getUserName();
 			}
 
@@ -309,6 +352,9 @@ void Chat::showChat() const
 
 	messagesFile.close();
 
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 	std::cout << "____END____ " << std::endl;
 }
@@ -324,6 +370,7 @@ void Chat::addMessage()
 	std::getline(std::cin, text);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!(to == "all" || to == "All" || getUserByName(to)))
 	{
 		std::cout << "error send message: can't find " << to << std::endl;
@@ -336,6 +383,8 @@ void Chat::addMessage()
 	else
 		_messages.emplace_back(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text);
 =======
+=======
+>>>>>>> master
 	if (to == "All" || to == "all")
 	{
 		Message message(_currentUser->getUserLogin(), "All", text);
@@ -372,6 +421,9 @@ void Chat::addMessage()
 			return;
 		}
 	}
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 }
 
@@ -397,11 +449,14 @@ void Chat::deleteLastMessage()
 std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	for (auto& user : _users)
 	{
 		if (login == user.getUserLogin())
 			return std::make_shared<User>(user);
 =======
+=======
+>>>>>>> master
 	std::ifstream user_file("users.txt");
 	if (!user_file.is_open())
 	{
@@ -420,6 +475,9 @@ std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
 		{
 			return std::make_shared<User>(userLogin, userPassword, userName, userGender);
 		}
+<<<<<<< HEAD
+>>>>>>> master
+=======
 >>>>>>> master
 	}
 	return nullptr;
@@ -436,7 +494,10 @@ std::shared_ptr<User> Chat::getUserByName(const std::string& name) const
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 std::fstream& operator >>(std::fstream& is, User& obj)
 {
 	is >> obj._name;
@@ -465,5 +526,9 @@ std::ostream& operator <<(std::ostream& os, const Message& msg)
 	os << ' ';
 	os << msg._text;
 	return os;
+<<<<<<< HEAD
+}
+>>>>>>> master
+=======
 }
 >>>>>>> master
