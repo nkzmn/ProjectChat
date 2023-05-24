@@ -360,6 +360,7 @@ std::ostream& operator <<(std::ostream& os, const Message& msg)
 	os << msg._text;
 	return os;
 }
+<<<<<<< HEAD:Client/source/Chat.cpp
 
 std::string Chat::strToUpper(std::string str)
 {
@@ -367,3 +368,5 @@ std::string Chat::strToUpper(std::string str)
 		[](unsigned char c) { return toupper(c); });
 	return str;
 }
+=======
+>>>>>>> d5a832511f1df0fb33792d0b817a36a5c0bc40c6:source/Chat.cpp
