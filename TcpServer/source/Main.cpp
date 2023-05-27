@@ -3,6 +3,7 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
+#include <WS2tcpip.h>
 #define CloseSocket closesocket
 #else
 #include <unistd.h>
@@ -23,102 +24,92 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &wsaData); // Инициализация использования сокета на Windows
 #endif
 
-	struct sockaddr_in serveraddress, client;
-
-#ifdef _WIN32
-	int length;
-#else
-	socklen_t length;
-#endif
-
-	SOCKET sockert_file_descriptor, connection;
-	int bind_status, connection_status;
+	int socket_file_descriptor, client_socket_file_descriptor, bytes_received;
+	struct sockaddr_in server_address, client_address;
 	char message[MESSAGE_LENGTH];
 
-	// Создадим сокет
-	sockert_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockert_file_descriptor == INVALID_SOCKET)
+	socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+
+	if (socket_file_descriptor == -1)
 	{
 		std::cout << "Socket creation failed.!" << std::endl;
 		exit(1);
 	}
-	 
-	serveraddress.sin_addr.s_addr = htonl(INADDR_ANY);
-	// Зададим номер порта для связи
-	serveraddress.sin_port = htons(PORT);
-	// Используем IPv4
-	serveraddress.sin_family = AF_INET;
-	// Привяжем сокет
-	bind_status = bind(sockert_file_descriptor, (struct sockaddr*)&serveraddress,
-		sizeof(serveraddress));
-	if (bind_status == -1) {
+
+	memset(&server_address, 0, sizeof(server_address));
+	server_address.sin_family = AF_INET;
+	server_address.sin_port = htons(PORT);
+	server_address.sin_addr.s_addr = INADDR_ANY;
+
+	if (bind(socket_file_descriptor, (struct sockaddr *)&server_address, sizeof(server_address)) == -1)
+	{
 		std::cout << "Socket binding failed.!" << std::endl;
 		exit(1);
 	}
-	// Поставим сервер на прием данных 
-	connection_status = listen(sockert_file_descriptor, 5);
-	if (connection_status == -1) {
-		std::cout << "Socket is unable to listen for new connections.!" << std::endl;
-		exit(1);
-	}
-	else {
-		std::cout << "Server is listening for new connection: " << std::endl;
-	}
-	length = sizeof(client);
-	connection = accept(sockert_file_descriptor, (struct sockaddr*)&client, &length);
-	if (connection == -1) {
-		std::cout << "Server is unable to accept the data from client.!" << std::endl;
-		exit(1);
-	}
 
-/*	while (1) 
+	if (listen(socket_file_descriptor, 5) == -1)
 	{
-#ifdef _WIN32
-		memset(message, 0, MESSAGE_LENGTH);
-		recv(connection, message, sizeof(message), 0);
-		if (strncmp("end", message, 3) == 0)
+		std::cout << "Listen failed.!" << std::endl;
+		exit(1);
+	}
+
+	std::cout << "Listening for incoming connections..." << std::endl;
+
+	while (1)
+	{
+		socklen_t client_address_size = sizeof(client_address);
+		client_socket_file_descriptor = accept(socket_file_descriptor, (struct sockaddr *)&client_address, &client_address_size);
+
+		if (client_socket_file_descriptor == -1)
 		{
-			std::cout << "Client Exited." << std::endl;
-			std::cout << "Server is Exiting..!" << std::endl;
-			break;
+			std::cout << "Unable to accept connection.!" << std::endl;
+			continue;
 		}
-		std::cout << "Data received from client: " << message << std::endl;
-		memset(message, 0, MESSAGE_LENGTH);
-		std::cout << "Enter the message you want to send to the client: " << std::endl;
-		std::cin >> message;
-		int bytes = send(connection, message, sizeof(message), 0);
 
+		std::cout << "Connection accepted from " << inet_ntoa(client_address.sin_addr) << ":" << ntohs(client_address.sin_port) << std::endl;
+
+		// Принимаем и отправляем сообщения
+		while (bytes_received = recv(client_socket_file_descriptor, message, sizeof(message), 0))
+		{
+			if (bytes_received == -1)
+			{
+				std::cout << "Error receiving data from client.!" << std::endl;
+				break;
+			}
+
+			// Добавим символ конца строки для вывода на экран
+			message[bytes_received] = '\0';
+
+			std::cout << "Received message from client: " << message << std::endl;
+
+			// Отправляем ответ клиенту
+			send(client_socket_file_descriptor, message, bytes_received, 0);
+			memset(message, 0, MESSAGE_LENGTH);
+		}
+
+		// Закрываем соединение
+		if (bytes_received == 0)
+		{
+			std::cout << "Client disconnected.!" << std::endl;
+		}
+		else
+		{
+			std::cout << "Error in communication.!" << std::endl;
+		}
+#ifdef _WIN32
+		closesocket(client_socket_file_descriptor);
 #else
-		bzero(message, MESSAGE_LENGTH);
-		read(connection, message, sizeof(message));
-		if (strncmp("end", message, 3) == 0) {
-			std::cout << "Client Exited." << std::endl;
-			std::cout << "Server is Exiting..!" << std::endl;
-			break;
-		}
-		std::cout << "Data received from client: " << message << std::endl;
-		bzero(message, MESSAGE_LENGTH);
-		std::cout << "Enter the message you want to send to the client: " << std::endl;
-		std::cin >> message;
-		ssize_t bytes = write(connection, message, sizeof(message));
-
+		close(client_socket_file_descriptor);
+#endif
+	}
+#ifdef _WIN32
+	closesocket(socket_file_descriptor);
+#else
+	close(socket_file_descriptor);
 #endif
 
-		// Если передали >= 0  байт, значит пересылка прошла успешно
-		if (bytes >= 0) 
-		{
-			std::cout << "Data successfully sent to the client.!" << std::endl;
-		}
-	}
-*/
-	// закрываем сокет, завершаем соединение
 #ifdef _WIN32
-	closesocket(connection);
-	closesocket(sockert_file_descriptor);
-	WSACleanup(); // Очистка сокета на Windows
-#else
-	close(connection);
-	close(sockert_file_descriptor);
+	WSACleanup();
 #endif
 
 	return 0;

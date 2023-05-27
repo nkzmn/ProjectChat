@@ -7,28 +7,40 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &wsaData); // Инициализация использования сокета на Windows
 #endif
 
-	Client client;
+	std::ifstream msg_file("messages.txt");
 
-	client.socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
-	if (client.socket_file_descriptor == -1) {
+	if (!msg_file.is_open())
+	{
+		std::cout << "Error opening file" << std::endl;
+		exit(1);
+	}
+
+	Chat chat;
+
+	chat.socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+	if (chat.socket_file_descriptor == -1) {
 		std::cout << "Creation of Socket failed!" << std::endl;
 		exit(1);
 	}
 
 	// Установим адрес сервера
-	client.serveraddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+	chat.serveraddress.sin_addr.s_addr = inet_addr("127.0.0.1");
 	// Зададим номер порта
-	client.serveraddress.sin_port = htons(PORT);
+	chat.serveraddress.sin_port = htons(PORT);
 	// Используем IPv4
-	client.serveraddress.sin_family = AF_INET;
+	chat.serveraddress.sin_family = AF_INET;
 	// Установим соединение с сервером
-	client.connection = connect(client.socket_file_descriptor, (struct sockaddr*)&client.serveraddress, sizeof(client.serveraddress));
-	if (client.connection == -1) {
+	chat.connection = connect(chat.socket_file_descriptor, (struct sockaddr*)&chat.serveraddress, sizeof(chat.serveraddress));
+	if (chat.connection == -1) {
 		std::cout << "Connection with the server failed.!" << std::endl;
 		exit(1);
 	}
+	else
+	{
+		std::cout << "Connection established with the server!" << std::endl;
+		std::cout << "---------------------------------------" << std::endl;
+	}
 
-	Chat chat;
 
 	chat.startChat();
 
@@ -44,12 +56,12 @@ int main()
 
 	// закрываем сокет, завершаем соединение
 #ifdef _WIN32
-	closesocket(client.connection);
-	closesocket(client.socket_file_descriptor);
+	closesocket(chat.connection);
+	closesocket(chat.socket_file_descriptor);
 	WSACleanup(); // Очистка сокета на Windows
 #else
-	close(client.connection);
-	close(client.sockert_file_descriptor);
+	close(chat.connection);
+	close(chat.sockert_file_descriptor);
 #endif
 
 	return 0;

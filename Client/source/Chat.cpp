@@ -200,14 +200,14 @@ void Chat::showChat() const
 
 	std::cout << "____START____ "<<std::endl;
 
-	std::ifstream messagesFile("messages.txt");
-	if (!messagesFile.is_open())
+	std::ifstream msg_file("messages.txt");
+	if (!msg_file.is_open())
 	{
 		std::cout << "Error opening file!" << std::endl;
 		return;
 	}
 
-	while (getline(messagesFile, from, ' ') && getline(messagesFile, to, ' ') && getline(messagesFile, text))
+	while (getline(msg_file, from, ' ') && getline(msg_file, to, ' ') && getline(msg_file, text))
 	{
 		if (_currentUser->getUserLogin() == from || _currentUser->getUserLogin() == to || to == "All")
 		{
@@ -226,7 +226,7 @@ void Chat::showChat() const
 		}
 	}
 
-	messagesFile.close();
+	msg_file.close();
 
 	std::cout << "____END____ " << std::endl;
 }
@@ -275,6 +275,32 @@ void Chat::addMessage()
 			return;
 		}
 	}
+
+	socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+
+	while (msg_file.getline(message, MESSAGE_LENGTH))
+	{
+		if (strlen(message) > 0)
+		{
+			std::cout << "Sending message: " << message << std::endl;
+			send(socket_file_descriptor, message, strlen(message), 0);
+			memset(message, 0, MESSAGE_LENGTH);
+
+			int bytes = recv(socket_file_descriptor, message, sizeof(message), 0);
+
+			if (bytes == -1)
+			{
+				std::cout << "Error receiving data from server.!" << std::endl;
+				exit(1);
+			}
+
+			// Добавим символ конца строки для вывода на экран
+			message[bytes] = '\0';
+
+			std::cout << "Server reply: " << message << std::endl;
+		}
+	}
+
 	msg_file.close();
 }
 
@@ -360,7 +386,6 @@ std::ostream& operator <<(std::ostream& os, const Message& msg)
 	os << msg._text;
 	return os;
 }
-<<<<<<< HEAD:Client/source/Chat.cpp
 
 std::string Chat::strToUpper(std::string str)
 {
@@ -368,5 +393,3 @@ std::string Chat::strToUpper(std::string str)
 		[](unsigned char c) { return toupper(c); });
 	return str;
 }
-=======
->>>>>>> d5a832511f1df0fb33792d0b817a36a5c0bc40c6:source/Chat.cpp

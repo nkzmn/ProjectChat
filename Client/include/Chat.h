@@ -7,6 +7,7 @@
 #include<unistd.h>
 #include<sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #define SOCKET int
 #define INVALID_SOCKET -1
 #define CloseSocket close
@@ -45,6 +46,10 @@ public:
 	void showLoginMenu();
 	void showUserMenu();
 
+	int socket_file_descriptor, connection;
+	struct sockaddr_in serveraddress, client;
+	char message[MESSAGE_LENGTH];
+
 private:
 	bool _isChatWork = false;
 	std::vector<User> _users;
@@ -65,14 +70,4 @@ private:
 	std::vector<Message>& getAllmessages() { return _messages; }
 	std::shared_ptr<User> getUserByLogin(const std::string& login) const;
 	std::shared_ptr<User> getUserByName(const std::string& name) const;
-};
-
-class Client
-{
-public:
-	int socket_file_descriptor, connection;
-	struct sockaddr_in serveraddress, client;
-	char message[MESSAGE_LENGTH];
-
-private:
 };
