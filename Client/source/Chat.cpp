@@ -1,5 +1,26 @@
 #include "../include/Chat.h"
 
+void Chat::tcpConnect()
+{
+	result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+	if (result != 0) {
+		std::cerr << "Ошибка при инициализации Winsock" << std::endl;
+		exit(1);
+	}
+
+	clientsocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	server_address.sin_family = AF_INET;
+	server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+	server_address.sin_port = htons(8000);
+	result = connect(clientsocket, (sockaddr*)&server_address, sizeof(server_address));
+	if (result == SOCKET_ERROR) {
+		std::cerr << "Ошибка при подключении к серверу" << std::endl;
+		closesocket(clientsocket);
+		WSACleanup();
+		exit(1);
+	}
+}
+
 void Chat::startChat()
 {
 	_isChatWork = true;
@@ -231,6 +252,17 @@ void Chat::showChat() const
 	std::cout << "____END____ " << std::endl;
 }
 
+void sendMessage(SOCKET clientSocket, const std::string& to, const std::string& text) {
+	std::string message = to + ":" + text;
+	int messageLength = message.length();
+
+	// Отправляем длину сообщения на сервер
+	send(clientSocket, (char*)&messageLength, sizeof(int), 0);
+
+	// Отправляем сообщение на сервер
+	send(clientSocket, message.c_str(), messageLength, 0);
+}
+
 void Chat::addMessage()
 {
 	std::string to, text;
@@ -275,33 +307,9 @@ void Chat::addMessage()
 			return;
 		}
 	}
-
-	socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
-
-	while (msg_file.getline(message, MESSAGE_LENGTH))
-	{
-		if (strlen(message) > 0)
-		{
-			std::cout << "Sending message: " << message << std::endl;
-			send(socket_file_descriptor, message, strlen(message), 0);
-			memset(message, 0, MESSAGE_LENGTH);
-
-			int bytes = recv(socket_file_descriptor, message, sizeof(message), 0);
-
-			if (bytes == -1)
-			{
-				std::cout << "Error receiving data from server.!" << std::endl;
-				exit(1);
-			}
-
-			// Добавим символ конца строки для вывода на экран
-			message[bytes] = '\0';
-
-			std::cout << "Server reply: " << message << std::endl;
-		}
-	}
-
 	msg_file.close();
+	
+	sendMessage(clientsocket, to, text);
 }
 
 void Chat::deleteLastMessage()

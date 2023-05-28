@@ -2,6 +2,7 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
+#include <WS2tcpip.h>
 #define CloseSocket closesocket
 #else
 #include<unistd.h>
@@ -45,10 +46,13 @@ public:
 	std::shared_ptr<User> getCurrentUser() const { return _currentUser; }
 	void showLoginMenu();
 	void showUserMenu();
+	void tcpConnect();
 
-	int socket_file_descriptor, connection;
-	struct sockaddr_in serveraddress, client;
-	char message[MESSAGE_LENGTH];
+	WSADATA wsa_data;
+	int result;
+	SOCKET clientsocket; 
+	sockaddr_in server_address;
+
 
 private:
 	bool _isChatWork = false;
@@ -65,7 +69,7 @@ private:
 	void showAllUsersName() const;
 	void addMessage();
 	void deleteLastMessage();
-
+	
 	std::vector<User>& getAllUsers() { return _users; }
 	std::vector<Message>& getAllmessages() { return _messages; }
 	std::shared_ptr<User> getUserByLogin(const std::string& login) const;

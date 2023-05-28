@@ -1,116 +1,80 @@
 #include <iostream>
-#include <string.h>
-
-#ifdef _WIN32
+#include <string>
+#include <fstream>
 #include <winsock2.h>
 #include <WS2tcpip.h>
-#define CloseSocket closesocket
-#else
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#define SOCKET int
-#define INVALID_SOCKET -1
-#define CloseSocket close
-#endif
 
-#define MESSAGE_LENGTH 1024
-#define PORT 7777
-
-int main() 
-{
-#ifdef _WIN32
-	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2, 2), &wsaData); // Инициализация использования сокета на Windows
-#endif
-
-	int socket_file_descriptor, client_socket_file_descriptor, bytes_received;
-	struct sockaddr_in server_address, client_address;
-	char message[MESSAGE_LENGTH];
-
-	socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
-
-	if (socket_file_descriptor == -1)
-	{
-		std::cout << "Socket creation failed.!" << std::endl;
-		exit(1);
+int main() {
+	std::setlocale(LC_ALL, "");
+	// инициализация библиотеки Winsock
+	WSADATA wsa_data;
+	int result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+	if (result != 0) {
+		std::cerr << "Ошибка при инициализации Winsock" << std::endl;
+		return 1;
 	}
 
-	memset(&server_address, 0, sizeof(server_address));
+	// создание TCP сокета
+	SOCKET serversocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	// связывание сокета с локальным хостом и портом
+	sockaddr_in server_address;
 	server_address.sin_family = AF_INET;
-	server_address.sin_port = htons(PORT);
 	server_address.sin_addr.s_addr = INADDR_ANY;
-
-	if (bind(socket_file_descriptor, (struct sockaddr *)&server_address, sizeof(server_address)) == -1)
-	{
-		std::cout << "Socket binding failed.!" << std::endl;
-		exit(1);
+	server_address.sin_port = htons(8000);
+	result = bind(serversocket, (sockaddr*)&server_address, sizeof(server_address));
+	if (result != 0) {
+		std::cerr << "Ошибка при связывании сокета" << std::endl;
+		closesocket(serversocket);
+		WSACleanup();
+		return 1;
 	}
 
-	if (listen(socket_file_descriptor, 5) == -1)
-	{
-		std::cout << "Listen failed.!" << std::endl;
-		exit(1);
+	// прослушивание входящих соединений
+	result = listen(serversocket, SOMAXCONN);
+	if (result != 0) {
+		std::cerr << "Ошибка при прослушивании соединений" << std::endl;
+		closesocket(serversocket);
+		WSACleanup();
+		return 1;
 	}
 
-	std::cout << "Listening for incoming connections..." << std::endl;
+	// ожидание подключения клиента
+	sockaddr_in client_address;
+	int client_address_len = sizeof(client_address);
+	SOCKET clientsocket = accept(serversocket, (sockaddr*)&client_address, &client_address_len);
+	char client_ip[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
+	std::cout << "Подключение от " << client_ip << ":" << ntohs(client_address.sin_port) << " было успешно установлено" << std::endl;
 
-	while (1)
-	{
-		socklen_t client_address_size = sizeof(client_address);
-		client_socket_file_descriptor = accept(socket_file_descriptor, (struct sockaddr *)&client_address, &client_address_size);
-
-		if (client_socket_file_descriptor == -1)
-		{
-			std::cout << "Unable to accept connection.!" << std::endl;
-			continue;
+	while (true) {
+		// получение сообщения от клиента
+		char buffer[1024] = { 0 };
+		result = recv(clientsocket, buffer, 1024, 0);
+		if (result == SOCKET_ERROR) {
+			std::cerr << "Ошибка при чтении сообщения" << std::endl;
+			break;
 		}
-
-		std::cout << "Connection accepted from " << inet_ntoa(client_address.sin_addr) << ":" << ntohs(client_address.sin_port) << std::endl;
-
-		// Принимаем и отправляем сообщения
-		while (bytes_received = recv(client_socket_file_descriptor, message, sizeof(message), 0))
-		{
-			if (bytes_received == -1)
-			{
-				std::cout << "Error receiving data from client.!" << std::endl;
-				break;
-			}
-
-			// Добавим символ конца строки для вывода на экран
-			message[bytes_received] = '\0';
-
-			std::cout << "Received message from client: " << message << std::endl;
-
-			// Отправляем ответ клиенту
-			send(client_socket_file_descriptor, message, bytes_received, 0);
-			memset(message, 0, MESSAGE_LENGTH);
+		else if (result == 0) {
+			std::cout << "Клиент закрыл соединение" << std::endl;
+			break;
 		}
+		std::string data = buffer;
+		std::cout << "Сообщение: " << data << std::endl;
 
-		// Закрываем соединение
-		if (bytes_received == 0)
-		{
-			std::cout << "Client disconnected.!" << std::endl;
+		// отправка ответа клиенту
+		std::string response = "Сообщение доставлено";
+		result = send(clientsocket, response.c_str(), response.length(), 0);
+		if (result == SOCKET_ERROR) {
+			std::cerr << "Ошибка при отправке сообщения" << std::endl;
+			break;
 		}
-		else
-		{
-			std::cout << "Error in communication.!" << std::endl;
-		}
-#ifdef _WIN32
-		closesocket(client_socket_file_descriptor);
-#else
-		close(client_socket_file_descriptor);
-#endif
 	}
-#ifdef _WIN32
-	closesocket(socket_file_descriptor);
-#else
-	close(socket_file_descriptor);
-#endif
 
-#ifdef _WIN32
+	// закрытие соединений
+	closesocket(clientsocket);
+	closesocket(serversocket);
 	WSACleanup();
-#endif
 
 	return 0;
 }
