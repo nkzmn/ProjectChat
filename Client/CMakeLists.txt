@@ -14,5 +14,6 @@ set(INCLUDES
 )
 
 add_executable(Client ${SOURCES} ${INCLUDES})
-
-target_link_libraries(Client ws2_32)
+if(WIN32)
+    target_link_libraries(Client ws2_32)
+endif()

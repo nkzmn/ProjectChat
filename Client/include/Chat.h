@@ -47,12 +47,15 @@ public:
 	void showLoginMenu();
 	void showUserMenu();
 	void tcpConnect();
+	void sendMessage(SOCKET clientSocket, const std::string& login, const std::string& to, const std::string& text);
 
+#ifdef _WIN32
 	WSADATA wsa_data;
+#endif
+
 	int result;
 	SOCKET clientsocket; 
 	sockaddr_in server_address;
-
 
 private:
 	bool _isChatWork = false;

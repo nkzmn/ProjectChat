@@ -8,4 +8,6 @@ set(SOURCES
 
 add_executable(Server ${SOURCES})
 
-target_link_libraries(Server ws2_32)
+if(WIN32)
+    target_link_libraries(Server ws2_32)
+endif()

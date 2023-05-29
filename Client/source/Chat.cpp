@@ -2,23 +2,35 @@
 
 void Chat::tcpConnect()
 {
+#ifdef _WIN32
 	result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (result != 0) {
 		std::cerr << "Ошибка при инициализации Winsock" << std::endl;
 		exit(1);
 	}
+#endif
 
 	clientsocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	server_address.sin_family = AF_INET;
 	server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
 	server_address.sin_port = htons(8000);
 	result = connect(clientsocket, (sockaddr*)&server_address, sizeof(server_address));
+#ifdef _WIN32
 	if (result == SOCKET_ERROR) {
 		std::cerr << "Ошибка при подключении к серверу" << std::endl;
 		closesocket(clientsocket);
 		WSACleanup();
 		exit(1);
 	}
+#else
+    if (result == -1)
+    {
+        std::cerr << "Ошибка при подключении к серверу" << std::endl;
+        close(clientsocket);
+        exit(1);
+    }
+#endif
+
 }
 
 void Chat::startChat()
@@ -252,12 +264,10 @@ void Chat::showChat() const
 	std::cout << "____END____ " << std::endl;
 }
 
-void sendMessage(SOCKET clientSocket, const std::string& to, const std::string& text) {
-	std::string message = to + ":" + text;
+void Chat::sendMessage(SOCKET clientSocket, const std::string& login, const std::string& to, const std::string& text) 
+{
+	std::string message = _currentUser->getUserLogin() + " " + to + " " + text;
 	int messageLength = message.length();
-
-	// Отправляем длину сообщения на сервер
-	send(clientSocket, (char*)&messageLength, sizeof(int), 0);
 
 	// Отправляем сообщение на сервер
 	send(clientSocket, message.c_str(), messageLength, 0);
@@ -274,14 +284,13 @@ void Chat::addMessage()
 	std::getline(std::cin, text);
 
 	std::ifstream users_file("users.txt");
-	msg_file.open("messages.txt", std::ios::app);
 
 	if (strToUpper(to) == "ALL")
 	{
 
 		Message message(_currentUser->getUserLogin(), "All", text);
 		_messages.push_back(message);
-		msg_file << message << std::endl;
+		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text); // Отправляем сообщение на сервер
 	}
 	else
 	{
@@ -295,9 +304,7 @@ void Chat::addMessage()
 				found = true;
 				Message message(_currentUser->getUserLogin(), login, text);
 				_messages.push_back(message);
-
-				msg_file << message << std::endl;
-				msg_file.close();
+				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserLogin(), text); // Отправляем сообщение на сервер
 				break;
 			}
 		}
@@ -307,9 +314,6 @@ void Chat::addMessage()
 			return;
 		}
 	}
-	msg_file.close();
-	
-	sendMessage(clientsocket, to, text);
 }
 
 void Chat::deleteLastMessage()
