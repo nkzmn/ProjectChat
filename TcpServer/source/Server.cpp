@@ -5,15 +5,15 @@ int Server::init()
 #ifdef _WIN32
 	result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (result != 0) {
-		std::cerr << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸ Winsock" << std::endl;
+		std::cerr << "Îøèáêà ïðè èíèöèàëèçàöèè Winsock" << std::endl;
 		return 1;
 	}
 #endif
 
-	// ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ TCP ÑÐ¾ÐºÐµÑ‚Ð°
+	// ñîçäàíèå TCP ñîêåòà
 	serversocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	// ÑÐ²ÑÐ·Ñ‹Ð²Ð°Ð½Ð¸Ðµ ÑÐ¾ÐºÐµÑ‚Ð° Ñ Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ñ‹Ð¼ Ñ…Ð¾ÑÑ‚Ð¾Ð¼ Ð¸ Ð¿Ð¾Ñ€Ñ‚Ð¾Ð¼
+	// ñâÿçûâàíèå ñîêåòà ñ ëîêàëüíûì õîñòîì è ïîðòîì
 	server_address.sin_family = AF_INET;
 	server_address.sin_addr.s_addr = INADDR_ANY;
 	server_address.sin_port = htons(8000);
@@ -21,24 +21,24 @@ int Server::init()
 
 #ifdef _WIN32
 	if (result != 0) {
-		std::cerr << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ ÑÐ²ÑÐ·Ñ‹Ð²Ð°Ð½Ð¸Ð¸ ÑÐ¾ÐºÐµÑ‚Ð°" << std::endl;
+		std::cerr << "Îøèáêà ïðè ñâÿçûâàíèè ñîêåòà" << std::endl;
 		closesocket(serversocket);
 		WSACleanup();
 		return 1;
 	}
 #else
 	if (result != 0) {
-		std::cerr << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ ÑÐ²ÑÐ·Ñ‹Ð²Ð°Ð½Ð¸Ð¸ ÑÐ¾ÐºÐµÑ‚Ð°" << std::endl;
+		std::cerr << "Îøèáêà ïðè ñâÿçûâàíèè ñîêåòà" << std::endl;
 		close(serversocket);
 		return 1;
 	}
 #endif
 
-	// Ð¿Ñ€Ð¾ÑÐ»ÑƒÑˆÐ¸Ð²Ð°Ð½Ð¸Ðµ Ð²Ñ…Ð¾Ð´ÑÑ‰Ð¸Ñ… ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ð¹
+	// ïðîñëóøèâàíèå âõîäÿùèõ ñîåäèíåíèé
 	result = listen(serversocket, SOMAXCONN);
 	if (result != 0)
 	{
-		std::cerr << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ð¿Ñ€Ð¾ÑÐ»ÑƒÑˆÐ¸Ð²Ð°Ð½Ð¸Ð¸ ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ð¹" << std::endl;
+		std::cerr << "Îøèáêà ïðè ïðîñëóøèâàíèè ñîåäèíåíèé" << std::endl;
 #ifdef _WIN32
 		closesocket(serversocket);
 		WSACleanup();
@@ -55,12 +55,12 @@ void Server::tcpConnect()
 	client_address_len = sizeof(client_address);
 	clientsocket = accept(serversocket, (sockaddr*)&client_address, &client_address_len);
 	inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
-	std::cout << "ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð¾Ñ‚ " << client_ip << ":" << ntohs(client_address.sin_port) << " Ð±Ñ‹Ð»Ð¾ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¾" << std::endl;
+	std::cout << "Ïîäêëþ÷åíèå îò " << client_ip << ":" << ntohs(client_address.sin_port) << " áûëî óñïåøíî óñòàíîâëåíî" << std::endl;
 #else
 	client_address_len = sizeof(client_address);
 	clientsocket = accept(serversocket, (sockaddr*)&client_address, &client_address_len);
 	inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
-	std::cout << "ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð¾Ñ‚ " << client_ip << ":" << ntohs(client_address.sin_port) << " Ð±Ñ‹Ð»Ð¾ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¾" << std::endl;
+	std::cout << "Ïîäêëþ÷åíèå îò " << client_ip << ":" << ntohs(client_address.sin_port) << " áûëî óñïåøíî óñòàíîâëåíî" << std::endl;
 #endif
 }
 
@@ -68,7 +68,7 @@ void Server::sentMessage()
 {
 	while (true)
 	{
-		// Ð¾Ñ‚Ð¿Ñ€Ð°Ð²ÐºÐ° Ð¾Ñ‚Ð²ÐµÑ‚Ð° ÐºÐ»Ð¸ÐµÐ½Ñ‚Ñƒ
+		// îòïðàâêà îòâåòà êëèåíòó
 #ifdef _WIN32
 		msg_file = std::fstream("../../messages.txt", std::ios::in | std::ios::out | std::ios::app);
 #else
@@ -84,7 +84,7 @@ void Server::sentMessage()
 		}
 		msg_file.close();
 
-		// ÐžÑ‚Ð¿Ñ€Ð°Ð²ÐºÐ° ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ð¹ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°Ð¼
+		// Îòïðàâêà ñîîáùåíèé êëèåíòàì
 		std::string messages_str = messages.str();
 		if (!messages_str.empty())
 		{
@@ -112,17 +112,17 @@ void Server::recvMessage()
 		msg_file = std::fstream("messages.txt", std::ios::in | std::ios::out | std::ios::app);
 #endif
 
-		// Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ Ð¾Ñ‚ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°
+		// ïîëó÷åíèå ñîîáùåíèÿ îò êëèåíòà
 		char buffer[1024] = { 0 };
 		result = recv(clientsocket, buffer, 1024, 0);
 #ifdef _WIN32
 		if (result == SOCKET_ERROR) {
 			int error = WSAGetLastError();
 			if (error == WSAECONNRESET) {
-				std::cout << "Ð¡Ð¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð±Ñ‹Ð»Ð¾ Ð½ÐµÐ¿Ñ€ÐµÐ´Ð²Ð¸Ð´ÐµÐ½Ð½Ð¾ Ñ€Ð°Ð·Ð¾Ñ€Ð²Ð°Ð½Ð¾." << std::endl;
+				std::cout << "Ñîåäèíåíèå áûëî íåïðåäâèäåííî ðàçîðâàíî." << std::endl;
 			}
 			else {
-				std::cerr << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ñ‡Ñ‚ÐµÐ½Ð¸Ð¸ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ: " << error << std::endl;
+				std::cerr << "Îøèáêà ïðè ÷òåíèè ñîîáùåíèÿ: " << error << std::endl;
 			}
 			break;
 		}
@@ -130,21 +130,21 @@ void Server::recvMessage()
 		if (result == -1) {
 			int error = errno;
 			if (error == ECONNRESET) {
-				std::cout << "Ð¡Ð¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð±Ñ‹Ð»Ð¾ Ð½ÐµÐ¿Ñ€ÐµÐ´Ð²Ð¸Ð´ÐµÐ½Ð½Ð¾ Ñ€Ð°Ð·Ð¾Ñ€Ð²Ð°Ð½Ð¾." << std::endl;
+				std::cout << "Ñîåäèíåíèå áûëî íåïðåäâèäåííî ðàçîðâàíî." << std::endl;
 			}
 			else {
-				std::cerr << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ñ‡Ñ‚ÐµÐ½Ð¸Ð¸ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ: " << error << std::endl;
+				std::cerr << "Îøèáêà ïðè ÷òåíèè ñîîáùåíèÿ: " << error << std::endl;
 			}
 			break;
 		}
 #endif
 		else if (result == 0) {
-			std::cout << "ÐšÐ»Ð¸ÐµÐ½Ñ‚ Ð·Ð°ÐºÑ€Ñ‹Ð» ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ" << std::endl;
+			std::cout << "Êëèåíò çàêðûë ñîåäèíåíèå" << std::endl;
 			break;
 		}
 
 		std::string data = buffer;
-		std::cout << "ÐŸÐ¾Ð»ÑƒÑ‡ÐµÐ½Ð¾ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ: " << data << std::endl;
+		std::cout << "Ïîëó÷åíî ñîîáùåíèå: " << data << std::endl;
 		msg_file << data << std::endl;
 		msg_file.close();
 		serverUpdate();
@@ -168,15 +168,15 @@ void Server::serverUpdate()
 
 void Server::serverClose()
 {
-	// Ð·Ð°ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ð¹
+	// çàêðûòèå ñîåäèíåíèé
 #ifdef _WIN32
 	closesocket(clientsocket);
 	closesocket(serversocket);
 	WSACleanup();
-	std::cout << "Ð¡Ð¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð·Ð°ÐºÑ€Ñ‹Ñ‚Ð¾" << std::endl;
+	std::cout << "Ñîåäèíåíèå çàêðûòî" << std::endl;
 #else
 	close(clientsocket);
 	close(serversocket);
-	std::cout << "Ð¡Ð¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ðµ Ð·Ð°ÐºÑ€Ñ‹Ñ‚Ð¾" << std::endl;
+	std::cout << "Ñîåäèíåíèå çàêðûòî" << std::endl;
 #endif
 }

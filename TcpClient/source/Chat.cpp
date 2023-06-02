@@ -5,7 +5,7 @@ void Chat::tcpConnect()
 #ifdef _WIN32
 	result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (result != 0) {
-		std::cerr << "РћС€РёР±РєР° РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё Winsock" << std::endl;
+		std::cerr << "Ошибка при инициализации Winsock" << std::endl;
 		exit(1);
 	}
 #endif
@@ -17,7 +17,7 @@ void Chat::tcpConnect()
 	result = connect(clientsocket, (sockaddr*)&server_address, sizeof(server_address));
 #ifdef _WIN32
 	if (result == SOCKET_ERROR) {
-		std::cerr << "РћС€РёР±РєР° РїСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё Рє СЃРµСЂРІРµСЂСѓ" << std::endl;
+		std::cerr << "Ошибка при подключении к серверу" << std::endl;
 		closesocket(clientsocket);
 		WSACleanup();
 		exit(1);
@@ -25,7 +25,7 @@ void Chat::tcpConnect()
 #else
     if (result == -1)
     {
-        std::cerr << "РћС€РёР±РєР° РїСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё Рє СЃРµСЂРІРµСЂСѓ" << std::endl;
+        std::cerr << "Ошибка при подключении к серверу" << std::endl;
         close(clientsocket);
         exit(1);
     }
@@ -253,11 +253,11 @@ void Chat::showChat() const
 	{
 		int recv_size = recv(clientsocket, buffer, sizeof(buffer), 0);
 		if (recv_size < 0) {
-			std::cout << "РћС€РёР±РєР° РїСЂРё С‡С‚РµРЅРёРё СЃРѕРѕР±С‰РµРЅРёСЏ" << std::endl;
+			std::cout << "Ошибка при чтении сообщения" << std::endl;
 			break;
 		}
 		else if (recv_size == 0) {
-			std::cout << "РЎРµСЂРІРµСЂ Р·Р°РєСЂС‹Р» СЃРѕРµРґРёРЅРµРЅРёРµ" << std::endl;
+			std::cout << "Сервер закрыл соединение" << std::endl;
 			break;
 		}
 		else 
@@ -274,7 +274,7 @@ void Chat::sendMessage(SOCKET clientSocket, const std::string& login, const std:
 	std::string message = _currentUser->getUserName() + " " + to + " " + text;
 	int messageLength = message.length();
 
-	// РћС‚РїСЂР°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° СЃРµСЂРІРµСЂ
+	// Отправляем сообщение на сервер
 	send(clientSocket, message.c_str(), messageLength, 0);
 }
 
@@ -298,7 +298,7 @@ void Chat::addMessage()
 	{
 		Message message(_currentUser->getUserLogin(), "All", text);
 		_messages.push_back(message);
-		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text); // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° СЃРµСЂРІРµСЂ
+		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text); // Отправляем сообщение на сервер
 	}
 	else
 	{
@@ -312,7 +312,7 @@ void Chat::addMessage()
 				found = true;
 				Message message(_currentUser->getUserLogin(), login, text);
 				_messages.push_back(message);
-				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserName(), text); // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° СЃРµСЂРІРµСЂ
+				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserName(), text); // Отправляем сообщение на сервер
 				break;
 			}
 		}
