@@ -1,4 +1,4 @@
-﻿#include "../include/Server.h"
+#include "../include/Server.h"
 
 int Server::init()
 {
@@ -162,11 +162,7 @@ void Server::serverUpdate()
 		else if (strcmp(buffer, "recv") == 0)
 			sentMessage();
 		else if (result == 0)
-		{
-			std::cout << "Соединение закрыто" << std::endl;
-			serverClose();
-			exit(0);
-		}
+			break;
 	}
 }
 
@@ -177,8 +173,10 @@ void Server::serverClose()
 	closesocket(clientsocket);
 	closesocket(serversocket);
 	WSACleanup();
+	std::cout << "Соединение закрыто" << std::endl;
 #else
 	close(clientsocket);
 	close(serversocket);
+	std::cout << "Соединение закрыто" << std::endl;
 #endif
 }

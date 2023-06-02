@@ -1,4 +1,4 @@
-﻿#include "../include/Chat.h"
+#include "../include/Chat.h"
 
 void Chat::tcpConnect()
 {
@@ -111,9 +111,11 @@ void Chat::showUserMenu()
 
 void Chat::showAllUsersName() const
 {
+#ifdef _WIN32
 	std::locale::global(std::locale("en_US.UTF-8"));
 	uint32_t Spades = 0x2642;
 	uint32_t Spades1 = 0x2640;
+#endif
 
 	std::cout << "--- Users ---" << std::endl;
 
@@ -128,10 +130,19 @@ void Chat::showAllUsersName() const
 	{
 		User user(login, password, name, gender);
 
+#ifdef _WIN32
 		if (user.getUserGender() == "Male")
 			std::wcout << (wchar_t)Spades << " ";
 		else if (user.getUserGender() == "Female")
 			std::wcout << (wchar_t)Spades1 << " ";
+#else
+		if (user.getUserGender() == "Male")
+			std::cout << "M ";
+		else if (user.getUserGender() == "Female")
+			std::cout << "W ";
+#endif
+
+		
 
 		std::cout << user.getUserName();
 
