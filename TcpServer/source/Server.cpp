@@ -26,9 +26,9 @@ int Server::init()
 		WSACleanup();
 		return 1;
 	}
-#else
+#else 
 	if (result != 0) {
-		std::cerr << "Ошибка при связывании сокета" << std::endl;
+		std::cerr << "Socket binding error" << std::endl;
 		close(serversocket);
 		return 1;
 	}
@@ -38,7 +38,7 @@ int Server::init()
 	result = listen(serversocket, SOMAXCONN);
 	if (result != 0)
 	{
-		std::cerr << "Ошибка при прослушивании соединений" << std::endl;
+		std::cerr << "Error listening for connections" << std::endl;
 #ifdef _WIN32
 		closesocket(serversocket);
 		WSACleanup();
@@ -60,7 +60,7 @@ void Server::tcpConnect()
 	client_address_len = sizeof(client_address);
 	clientsocket = accept(serversocket, (sockaddr*)&client_address, &client_address_len);
 	inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
-	std::cout << "Подключение от " << client_ip << ":" << ntohs(client_address.sin_port) << " было успешно установлено" << std::endl;
+	std::cout << "Connection from " << client_ip << ":" << ntohs(client_address.sin_port) << " was successfully established" << std::endl;
 #endif
 }
 
@@ -130,21 +130,21 @@ void Server::recvMessage()
 		if (result == -1) {
 			int error = errno;
 			if (error == ECONNRESET) {
-				std::cout << "Соединение было непредвиденно разорвано." << std::endl;
+				std::cout << "The connection was terminated unexpectedly." << std::endl;
 			}
 			else {
-				std::cerr << "Ошибка при чтении сообщения: " << error << std::endl;
+				std::cerr << "Error reading message: " << error << std::endl;
 			}
 			break;
 		}
 #endif
 		else if (result == 0) {
-			std::cout << "Клиент закрыл соединение" << std::endl;
+			std::cout << "The client closed the connection" << std::endl;
 			break;
 		}
 
 		std::string data = buffer;
-		std::cout << "Получено сообщение: " << data << std::endl;
+		std::cout << "Message received: " << data << std::endl;
 		msg_file << data << std::endl;
 		msg_file.close();
 		serverUpdate();
@@ -177,6 +177,6 @@ void Server::serverClose()
 #else
 	close(clientsocket);
 	close(serversocket);
-	std::cout << "Соединение закрыто" << std::endl;
+	std::cout << "Connection closed" << std::endl;
 #endif
 }

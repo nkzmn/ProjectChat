@@ -25,7 +25,7 @@ void Chat::tcpConnect()
 #else
     if (result == -1)
     {
-        std::cerr << "Ошибка при подключении к серверу" << std::endl;
+        std::cerr << "Error connecting to server" << std::endl;
         close(clientsocket);
         exit(1);
     }
