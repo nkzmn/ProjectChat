@@ -5,7 +5,7 @@ void Chat::tcpConnect()
 #ifdef _WIN32
 	result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (result != 0) {
-		std::cerr << "Œ¯Ë·Í‡ ÔË ËÌËˆË‡ÎËÁ‡ˆËË Winsock" << std::endl;
+		std::cerr << "–û—à–∏–±–∫–∞ –ø—Ä–∏ –∏–Ω–∏—Ü–∏–∞–ª–∏–∑–∞—Ü–∏–∏ Winsock" << std::endl;
 		exit(1);
 	}
 #endif
@@ -17,7 +17,7 @@ void Chat::tcpConnect()
 	result = connect(clientsocket, (sockaddr*)&server_address, sizeof(server_address));
 #ifdef _WIN32
 	if (result == SOCKET_ERROR) {
-		std::cerr << "Œ¯Ë·Í‡ ÔË ÔÓ‰ÍÎ˛˜ÂÌËË Í ÒÂ‚ÂÛ" << std::endl;
+		std::cerr << "–û—à–∏–±–∫–∞ –ø—Ä–∏ –ø–æ–¥–∫–ª—é—á–µ–Ω–∏–∏ –∫ —Å–µ—Ä–≤–µ—Ä—É" << std::endl;
 		closesocket(clientsocket);
 		WSACleanup();
 		exit(1);
@@ -253,11 +253,11 @@ void Chat::showChat() const
 	{
 		int recv_size = recv(clientsocket, buffer, sizeof(buffer), 0);
 		if (recv_size < 0) {
-			std::cout << "Œ¯Ë·Í‡ ÔË ˜ÚÂÌËË ÒÓÓ·˘ÂÌËˇ" << std::endl;
+			std::cout << "–û—à–∏–±–∫–∞ –ø—Ä–∏ —á—Ç–µ–Ω–∏–∏ —Å–æ–æ–±—â–µ–Ω–∏—è" << std::endl;
 			break;
 		}
 		else if (recv_size == 0) {
-			std::cout << "—Â‚Â Á‡Í˚Î ÒÓÂ‰ËÌÂÌËÂ" << std::endl;
+			std::cout << "–°–µ—Ä–≤–µ—Ä –∑–∞–∫—Ä—ã–ª —Å–æ–µ–¥–∏–Ω–µ–Ω–∏–µ" << std::endl;
 			break;
 		}
 		else 
@@ -274,7 +274,7 @@ void Chat::sendMessage(SOCKET clientSocket, const std::string& login, const std:
 	std::string message = _currentUser->getUserName() + " " + to + " " + text;
 	int messageLength = message.length();
 
-	// ŒÚÔ‡‚ÎˇÂÏ ÒÓÓ·˘ÂÌËÂ Ì‡ ÒÂ‚Â
+	// –û—Ç–ø—Ä–∞–≤–ª—è–µ–º —Å–æ–æ–±—â–µ–Ω–∏–µ –Ω–∞ —Å–µ—Ä–≤–µ—Ä
 	send(clientSocket, message.c_str(), messageLength, 0);
 }
 
@@ -298,7 +298,7 @@ void Chat::addMessage()
 	{
 		Message message(_currentUser->getUserLogin(), "All", text);
 		_messages.push_back(message);
-		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text); // ŒÚÔ‡‚ÎˇÂÏ ÒÓÓ·˘ÂÌËÂ Ì‡ ÒÂ‚Â
+		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text); // –û—Ç–ø—Ä–∞–≤–ª—è–µ–º —Å–æ–æ–±—â–µ–Ω–∏–µ –Ω–∞ —Å–µ—Ä–≤–µ—Ä
 	}
 	else
 	{
@@ -312,7 +312,7 @@ void Chat::addMessage()
 				found = true;
 				Message message(_currentUser->getUserLogin(), login, text);
 				_messages.push_back(message);
-				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserName(), text); // ŒÚÔ‡‚ÎˇÂÏ ÒÓÓ·˘ÂÌËÂ Ì‡ ÒÂ‚Â
+				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserName(), text); // –û—Ç–ø—Ä–∞–≤–ª—è–µ–º —Å–æ–æ–±—â–µ–Ω–∏–µ –Ω–∞ —Å–µ—Ä–≤–µ—Ä
 				break;
 			}
 		}
