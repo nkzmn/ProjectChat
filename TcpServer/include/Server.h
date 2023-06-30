@@ -28,6 +28,7 @@ public:
 	void serverClose();
 	void recvMessage();
 	void sentMessage();
+	void delMessage();
 
 private:
 #ifdef _WIN32
@@ -53,5 +54,5 @@ private:
 	char client_ip[INET_ADDRSTRLEN];
 
 	std::fstream msg_file;
-
+	std::fstream temp;
 };

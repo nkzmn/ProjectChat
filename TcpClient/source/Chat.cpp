@@ -5,7 +5,7 @@ void Chat::tcpConnect()
 #ifdef _WIN32
 	result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (result != 0) {
-		std::cerr << "РћС€РёР±РєР° РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё Winsock" << std::endl;
+		std::cerr << "Ошибка при инициализации Winsock" << std::endl;
 		exit(1);
 	}
 #endif
@@ -17,7 +17,7 @@ void Chat::tcpConnect()
 	result = connect(clientsocket, (sockaddr*)&server_address, sizeof(server_address));
 #ifdef _WIN32
 	if (result == SOCKET_ERROR) {
-		std::cerr << "РћС€РёР±РєР° РїСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё Рє СЃРµСЂРІРµСЂСѓ" << std::endl;
+		std::cerr << "Error connecting to server" << std::endl;
 		closesocket(clientsocket);
 		WSACleanup();
 		exit(1);
@@ -83,7 +83,7 @@ void Chat::showUserMenu()
 
 	while (_currentUser)
 	{
-		std::cout << "Menu:(1)Show chat | (2)Add message | (3)Users | (0)Logout" << "\n>> ";
+		std::cout << "Menu:(1)Show chat | (2)Add message | (3)Users | (4)Delete message | (0)Logout" << "\n>> ";
 		std::cin >> operation;
 		switch (operation)
 		{
@@ -97,7 +97,7 @@ void Chat::showUserMenu()
 			showAllUsersName();
 			break;
 		case '4':
-			//deleteLastMessage();
+			deleteMessage();
 			break;
 		case '0':
 			_currentUser = nullptr;
@@ -253,11 +253,11 @@ void Chat::showChat() const
 	{
 		int recv_size = recv(clientsocket, buffer, sizeof(buffer), 0);
 		if (recv_size < 0) {
-			std::cout << "РћС€РёР±РєР° РїСЂРё С‡С‚РµРЅРёРё СЃРѕРѕР±С‰РµРЅРёСЏ" << std::endl;
+			std::cout << "Ошибка при чтении сообщения" << std::endl;
 			break;
 		}
 		else if (recv_size == 0) {
-			std::cout << "РЎРµСЂРІРµСЂ Р·Р°РєСЂС‹Р» СЃРѕРµРґРёРЅРµРЅРёРµ" << std::endl;
+			std::cout << "Сервер закрыл соединение" << std::endl;
 			break;
 		}
 		else 
@@ -274,7 +274,7 @@ void Chat::sendMessage(SOCKET clientSocket, const std::string& login, const std:
 	std::string message = _currentUser->getUserName() + " " + to + " " + text;
 	int messageLength = message.length();
 
-	// РћС‚РїСЂР°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° СЃРµСЂРІРµСЂ
+	// Отправляем сообщение на сервер
 	send(clientSocket, message.c_str(), messageLength, 0);
 }
 
@@ -298,7 +298,7 @@ void Chat::addMessage()
 	{
 		Message message(_currentUser->getUserLogin(), "All", text);
 		_messages.push_back(message);
-		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text); // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° СЃРµСЂРІРµСЂ
+		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text); // Отправляем сообщение на сервер
 	}
 	else
 	{
@@ -312,7 +312,7 @@ void Chat::addMessage()
 				found = true;
 				Message message(_currentUser->getUserLogin(), login, text);
 				_messages.push_back(message);
-				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserName(), text); // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР° СЃРµСЂРІРµСЂ
+				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserName(), text); // Отправляем сообщение на сервер
 				break;
 			}
 		}
@@ -324,23 +324,56 @@ void Chat::addMessage()
 	}
 }
 
-void Chat::deleteLastMessage()
+void Chat::deleteMessage()
 {
-	if (!(_messages.empty()))
-	{
-		Message s = _messages.back();
+	char buffer[1024] = {};
+	std::string requestDelete = "delete";
+	int requestLength = requestDelete.length();
+	send(clientsocket, requestDelete.c_str(), requestLength, 0);
 
-		if ((_currentUser->getUserName() == "Admin") || (s.getFrom() == _currentUser->getUserLogin()))
+	std::string to, text_to_remove;
+
+	std::cout << "To (name or All): ";
+	std::cin >> to;
+	std::cout << "Text: ";
+	std::cin.ignore();
+	std::getline(std::cin, text_to_remove);
+
+	std::ifstream users_file("users.txt");
+
+	if (strToUpper(to) == "ALL")
+	{
+		sendMessage(clientsocket, _currentUser->getUserLogin(), "All", text_to_remove); // Отправляем сообщение на сервер
+	}
+	else
+	{
+		std::string login, password, name, gender;
+
+		bool found = false;
+		while (users_file >> login >> password >> name >> gender)
 		{
-			_messages.pop_back();
-			std::cout << std::endl << "Message was deleted." << std::endl;
+			if (strToUpper(name) == strToUpper(to))
+			{
+				found = true;
+				sendMessage(clientsocket, _currentUser->getUserLogin(), getUserByLogin(login)->getUserName(), text_to_remove); // Отправляем сообщение на сервер
+				break;
+			}
 		}
-		else
+		if (!found)
 		{
-			std::cout << "Not enough rights to delete." << std::endl;
+			std::cout << "Error: user not found\n";
+			return;
 		}
 	}
-	std::cout << "Chat is empty!" << std::endl;
+	send(clientsocket, text_to_remove.c_str(), 1024, 0);
+
+	int recv_size = recv(clientsocket, buffer, sizeof(buffer), 0);
+	if (recv_size < 0)
+		std::cout << "Ошибка при чтении сообщения" << std::endl;
+	else if (recv_size == 0)
+		std::cout << "Сервер закрыл соединение" << std::endl;
+	else
+		std::cout << buffer << std::endl << std::endl;
 }
 
 std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const

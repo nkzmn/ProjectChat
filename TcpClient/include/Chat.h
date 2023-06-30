@@ -63,11 +63,6 @@ private:
 	std::vector<Message> _messages;
 	std::shared_ptr<User> _currentUser = nullptr;
 	std::fstream user_file = std::fstream("users.txt", std::ios::in | std::ios::out | std::ios::app);
-#ifdef _WIN32
-	std::fstream msg_file = std::fstream("../../messages.txt", std::ios::in | std::ios::out | std::ios::app);
-#else
-	std::fstream msg_file = std::fstream("messages.txt", std::ios::in | std::ios::out | std::ios::app);
-#endif
 	std::string strToUpper(std::string str);
 
 	void login();
@@ -75,7 +70,7 @@ private:
 	void showChat() const;
 	void showAllUsersName() const;
 	void addMessage();
-	void deleteLastMessage();
+	void deleteMessage();
 	
 	std::vector<User>& getAllUsers() { return _users; }
 	std::vector<Message>& getAllmessages() { return _messages; }
